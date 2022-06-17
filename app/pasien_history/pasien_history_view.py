@@ -1,4 +1,4 @@
-from app.pasien_history import pasien_history_bp, pasien_history_controller
+from app.pasien_history import pasien_history_bp, pasien_history_controller, pasien_history_model
 
 # This file work for routing function from the html to the controller file.
 

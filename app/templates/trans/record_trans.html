@@ -4,13 +4,6 @@
     <title>Hospital</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script text='text/javascript'>
-      function idName(value){
-        text = value.split(" | ");
-        $("#noPasien").val(text[0]);
-        $("#namaPasien").val(text[1]);
-      }
-    </script>
 </head>  
 <body>
 {% extends 'dashboard/Dashboard.html'%}
@@ -36,10 +29,9 @@
 </form>
   
   <table id="table-list" border=5>  
-      <thead>  
-          <td>ID Dokter</td>  
+      <thead>
+          <td>ID Trans</td>
           <td>Nama Dokter</td>
-          <td>ID Pasien</td>
           <td>Nama Pasien</td>
           <td>Keluhan</td>
           <td>Detail</td>
@@ -47,9 +39,8 @@
   
       {% for row in datas %}
           <tr>
-              <td id="idDokter">{{row.id_dokter}}</td>  
+              <td>{{row.id_trans}}</td>
               <td id="namaDokter">{{row.nama_dokter}}</td>
-              <td id="">{{row.no_pasien}}</td>
               <td>{{row.nama_pasien}}</td>
               <td>{{row.keluhan}}</td>
               <td><button id="btn-edit" class="btn-addFile" data-toggle="modal" data-target="#detailTrans{{row.id_trans}}">Detail</button></td>
@@ -97,7 +88,7 @@
                                 <div class="form-group">
                                     <label class="control-label">Status Pembayaran</label>
                                     <div>
-                                        <input type="text" class="form-control input-lg" name="namaDokter" value="{{row.status_bayar}}" readonly>
+                                        <input type="text" class="form-control input-lg" name="namaDokter" id="statusPembayaran{{row.id_trans}}" value="{{row.status_bayar}}" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -132,6 +123,16 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
               </div><!-- /.modal -->
+              <script>
+                $(document).ready(function(){
+                  var status = $("#statusPembayaran{{row.id_trans}}").val()
+                  if(status == "N"){
+                    $("#statusPembayaran{{row.id_trans}}").val("Belum Bayar");
+                  } else if(status == "Y"){
+                    $("#statusPembayaran{{row.id_trans}}").val("Sudah Bayar");
+                  }
+                });
+              </script>
       {% endfor %}
   
   </table>  

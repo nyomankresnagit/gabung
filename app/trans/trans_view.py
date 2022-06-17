@@ -1,4 +1,4 @@
-from app.trans import trans_controller, trans_bp
+from app.trans import trans_controller, trans_bp, trans_model
 
 # This file work for routing function from the html to the controller file.
 
@@ -61,3 +61,11 @@ def savePayment():
 @trans_bp.route('/searchPaymentList', methods=['POST'])
 def searchPaymentList():
     return trans_controller.searchPaymentList()
+
+@trans_bp.route('/viewForPasien')
+def viewForPasien():
+    return trans_controller.viewForPasien()
+
+@trans_bp.route('/viewForDokter')
+def viewForDokter():
+    return trans_controller.viewForDokter()

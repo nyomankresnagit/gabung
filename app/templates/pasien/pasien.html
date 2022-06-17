@@ -11,9 +11,8 @@
 {% block content %}
 <form name="searchForm" method="post" action='{{url_for("pasien_bp.searchPasien")}}'>
     <table id="table-inputSearch">
-      <tr><td>No Buku : </td><td><input type="text" name="noBuku" id="id"></td></tr>
-      <tr><td>Judul Buku : </td><td><input type="text" name="judulBuku" id="jdl"></td></tr>
-      <tr><td>Penulis Buku : </td><td><input type="text" name="penulis" id="pnls"></td></tr>
+      <tr><td>No Pasien : </td><td><input type="text" name="noPasien" id="id"></td></tr>
+      <tr><td>Nama Pasien : </td><td><input type="text" name="namaPasien" id="jdl"></td></tr>
       <tr>
         <td><input class="btn-search" type="submit" value="Search"></td>
       </tr>
@@ -105,6 +104,18 @@
             </div>
             <div class="modal-body">
                 <form role="form" method="POST" action='{{url_for("pasien_bp.addPasien")}}'>
+                    <div class="form-group">
+                      <label class="control-label">Username</label>
+                      <div>
+                          <input type="text" class="form-control input-lg" name="username">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">password</label>
+                      <div>
+                          <input type="text" class="form-control input-lg" name="password">
+                      </div>
+                    </div>
                     <div class="form-group">
                         <label class="control-label">Nama Pasien</label>
                         <div>

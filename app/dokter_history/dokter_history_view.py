@@ -1,4 +1,4 @@
-from app.dokter_history import dokter_history_bp, dokter_history_controller
+from app.dokter_history import dokter_history_bp, dokter_history_controller, dokter_history_model
 
 # This file work for routing function from the html to the controller file.
 

@@ -1,4 +1,4 @@
-from app.dokter import dokter_controller, dokter_bp
+from app.dokter import dokter_controller, dokter_bp, dokter_view
 
 # This file work for routing function from the html to the controller file.
 

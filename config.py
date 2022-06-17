@@ -5,7 +5,12 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    host = os.environ.get("DB_HOST")
+    username = os.environ.get("DB_USERNAME")
+    password = os.environ.get("DB_PASSWORD")
+    database = os.environ.get("DATABASE")
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://'+username+':'+password+'@'+host+'/'+database
+    # SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
 
 
 class ProductionConfig(Config):

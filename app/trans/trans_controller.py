@@ -4,13 +4,14 @@ from app.dokter.dokter_model import dokter
 from app.pasien.pasien_model import pasien
 from app import db
 import datetime
+from flask_login import login_user, logout_user, login_required, current_user
 
 # This file is work for setting the function
 
 # The function below work for showing the active data on the database.
 def viewTrans():
     rows = db.session.query(trans).join(dokter).join(pasien).filter(trans.flag=="Y").with_entities(trans.id_trans, dokter.id_dokter, dokter.nama_dokter, pasien.no_pasien, pasien.nama_pasien, trans.keluhan, trans.status_bayar, trans.resep_dokter, trans.created_date, trans.updated_date, trans.harga_bayar).all()
-    return render_template("trans/record_trans.html", datas=rows)
+    return render_template("trans/record_trans.html", datas=rows, username=current_user)
     db.session.close()
 
 # The function below work for searching data from the website and showing active data from database.
@@ -32,15 +33,16 @@ def searchTrans():
     else:
         status_bayar = status_bayar
     rows = db.session.query(trans).join(dokter).join(pasien).filter(trans.flag=="Y", trans.no_pasien.like(no_pasien), pasien.nama_pasien.like(nama_pasien), trans.status_bayar.like(status_bayar)).with_entities(trans.id_trans, dokter.id_dokter, dokter.nama_dokter, pasien.no_pasien, pasien.nama_pasien, trans.keluhan, trans.status_bayar, trans.resep_dokter, trans.created_date, trans.updated_date, trans.harga_bayar).all()
-    return render_template("trans/record_trans.html", datas=rows)
+    return render_template("trans/record_trans.html", datas=rows, username=current_user)
     db.session.close()
 
 # The function below work for showing data that has flag value "Y" and status_pemeriksaan value "N"
 # This function work for showing dokter that available and didnt have transaction running.
 def showAvailableDokter():
-    availableDokter = dokter.query.filter(dokter.flag=="Y", dokter.status_pemeriksaan=="N")
-    availablePasien = pasien.query.filter(pasien.flag=="Y")
-    return render_template("trans/trans_available_dokter.html", datas=availableDokter, datas2=availablePasien)
+    availableDokter = dokter.query.filter(dokter.flag=="Y", dokter.kuota!=0)
+    user = current_user.username
+    row = pasien.query.filter(pasien.username==user).first()
+    return render_template("trans/trans_available_dokter.html", datas=availableDokter, datas2=row, username=current_user)
     db.session.close()
 
 # The function below work for searching data from the website and showing active data from database.
@@ -66,35 +68,39 @@ def searchAvailableDokter():
         hari_kerja = "%"
     else:
         hari_kerja = "%" + hari_kerja + "%"
-    availableDokter = dokter.query.filter(dokter.id_dokter.like(id_dokter), dokter.nama_dokter.like(nama_dokter), dokter.jam_kerja.like(jam_kerja), dokter.hari_kerja.like(hari_kerja), dokter.flag=="Y").all()
+    availableDokter = dokter.query.filter(dokter.id_dokter.like(id_dokter), dokter.nama_dokter.like(nama_dokter), dokter.jam_kerja.like(jam_kerja), dokter.hari_kerja.like(hari_kerja), dokter.flag=="Y", dokter.kuota!=0).all()
     availablePasien = pasien.query.filter(pasien.flag=="Y")
-    return render_template("trans/trans_available_dokter.html", datas=availableDokter, datas2=availablePasien)
+    return render_template("trans/trans_available_dokter.html", datas=availableDokter, datas2=availablePasien, username=current_user)
     db.session.close()
 
 # The function below work for add transaction to the database using value from website form.
 # This function also changing value in the database from dokter table and pasien table. 
 def bookDokter():
-    id_dokter = request.form.get("idDokter")
-    no_pasien = request.form.get("noPasien")
-    keluhan = request.form.get("keluhan")
-    date = datetime.datetime.now()
-    saveTrans = trans(id_dokter=id_dokter, no_pasien=no_pasien, status_bayar="N", status_checking_dokter="N", resep_dokter="", harga_bayar=0, keluhan=keluhan, flag="Y", created_date=date, updated_date=date)
-    db.session.add(saveTrans)
-    db.session.commit()
-    saveDokter = dokter.query.filter(dokter.id_dokter==id_dokter).first()
-    saveDokter.status_pemeriksaan = "Y"
-    db.session.commit()
-    savePasien = pasien.query.filter(pasien.no_pasien==no_pasien).first()
-    savePasien.status_diperiksa = "Y"
-    db.session.commit()
-    flash("Proses Book Dokter telah Berhasil.")
+    data = pasien.query.filter(pasien.username==current_user.username).first()
+    if data.status_diperiksa == "Y":
+        flash("Silahkan Selesaikan Administrasi terlebih dahulu.")
+    elif data.status_diperiksa == "N":
+        id_dokter = request.form.get("idDokter")
+        no_pasien = request.form.get("noPasien")
+        keluhan = request.form.get("keluhan")
+        date = datetime.datetime.now()
+        saveTrans = trans(id_dokter=id_dokter, no_pasien=no_pasien, status_bayar="N", status_checking_dokter="N", resep_dokter="", harga_bayar=0, keluhan=keluhan, flag="Y", created_date=date, updated_date=date)
+        db.session.add(saveTrans)
+        db.session.commit()
+        saveDokter = dokter.query.filter(dokter.id_dokter==id_dokter).first()
+        saveDokter.kuota = saveDokter.kuota - 1
+        db.session.commit()
+        savePasien = pasien.query.filter(pasien.no_pasien==no_pasien).first()
+        savePasien.status_diperiksa = "Y"
+        db.session.commit()
+        flash("Proses Book Dokter telah Berhasil.")
     return redirect(url_for('trans_bp.showAvailableDokter'))
     db.session.close()
 
 # The function below work for showing the data that has transaction from the database.
 def showDokterInTrans():
     rows = db.session.query(trans).join(dokter).join(pasien).filter(trans.flag=="Y", trans.status_bayar=="N", trans.status_checking_dokter=="N").with_entities(trans.id_trans, dokter.id_dokter, dokter.nama_dokter, dokter.hari_kerja, dokter.jam_kerja, pasien.no_pasien, pasien.nama_pasien, trans.keluhan, trans.status_bayar, trans.resep_dokter, trans.created_date, trans.updated_date).all()
-    return render_template("trans/checking_dokter.html", datas=rows)
+    return render_template("trans/checking_dokter.html", datas=rows, username=current_user)
     db.session.close()
 
 # The function below work for searching data from the website and showing the data that has transaction from database.
@@ -121,7 +127,7 @@ def searchDokterInTrans():
     else:
         hari_kerja = "%" + hari_kerja + "%"
     rows = db.session.query(trans).join(dokter).join(pasien).filter(trans.flag=="Y", trans.status_bayar=="N", trans.id_dokter.like(id_dokter), dokter.nama_dokter.like(nama_dokter), dokter.hari_kerja.like(hari_kerja), dokter.jam_kerja.like(jam_kerja)).with_entities(trans.id_trans, dokter.id_dokter, dokter.nama_dokter, dokter.hari_kerja, dokter.jam_kerja, pasien.no_pasien, pasien.nama_pasien, trans.keluhan, trans.status_bayar, trans.resep_dokter, trans.created_date, trans.updated_date).all()
-    return render_template("trans/checking_dokter.html", datas=rows)
+    return render_template("trans/checking_dokter.html", datas=rows, username=current_user)
     db.session.close()
 
 # The function below work for saving transaction to the database using value from website form.
@@ -141,18 +147,19 @@ def saveDokterResult():
     saveTrans.keluhan = keluhan
     saveTrans.harga_bayar = harga_bayar
     saveTrans.status_checking_dokter = "Y"
+    saveTrans.updated_date = datetime.datetime.now()
     db.session.commit()
     saveDokter = dokter.query.filter(dokter.id_dokter==id_dokter).first()
-    saveDokter.status_pemeriksaan = "N"
+    saveDokter.kuota = saveDokter.kuota + 1
     db.session.commit()
     flash("Data Pembayaran Berhasil diinput.")
-    return redirect(url_for('trans_bp.showDokterInTrans'))
+    return redirect(url_for('trans_bp.viewForDokter'))
     db.session.close()
 
 # The function below work for showing the data that has N value in the trans table on status_bayar column from the database.
 def showPaymentList():
     rows = db.session.query(trans).join(dokter).join(pasien).filter(trans.flag=="Y", trans.status_bayar=="N", trans.status_checking_dokter=="Y").with_entities(trans.id_trans, dokter.id_dokter, dokter.nama_dokter, dokter.hari_kerja, dokter.jam_kerja, pasien.no_pasien, pasien.nama_pasien, trans.keluhan, trans.status_bayar, trans.resep_dokter, trans.created_date, trans.updated_date, trans.harga_bayar).all()
-    return render_template("trans/payment.html", datas=rows)
+    return render_template("trans/payment.html", datas=rows, username=current_user)
 
 # The function below work for searching data from the website and showing the data that has transaction from database.
 # This function using form to get value from the website.
@@ -168,7 +175,7 @@ def searchPaymentList():
     else:
         nama_pasien = "%"+nama_pasien+"%"
     rows = db.session.query(trans).join(dokter).join(pasien).filter(trans.flag=="Y", trans.status_bayar=="N", trans.status_checking_dokter=="Y", trans.no_pasien.like(no_pasien), pasien.nama_pasien.like(nama_pasien)).with_entities(trans.id_trans, dokter.id_dokter, dokter.nama_dokter, dokter.hari_kerja, dokter.jam_kerja, pasien.no_pasien, pasien.nama_pasien, trans.keluhan, trans.status_bayar, trans.resep_dokter, trans.created_date, trans.updated_date, trans.harga_bayar).all()
-    return render_template("trans/payment.html", datas=rows)
+    return render_template("trans/payment.html", datas=rows, username=current_user)
 
 # The function below work for saving payment status from N to Y value.
 # This function using form to get value from the website.
@@ -177,10 +184,23 @@ def savePayment():
     no_pasien = request.form.get("noPasien")
     savePayment = trans.query.filter(trans.id_trans==id_trans, trans.flag=="Y").first()
     savePayment.status_bayar = "Y"
+    savePayment.updated_date = datetime.datetime.now()
     db.session.commit()
     savePasien = pasien.query.filter(pasien.no_pasien==no_pasien).first()
     savePasien.status_diperiksa = "N"
     db.session.commit()
     flash("Pembayaran Berhasil.")
     return redirect(url_for('trans_bp.showPaymentList'))
+    db.session.close()
+
+def viewForPasien():
+    user = current_user.username
+    rows = db.session.query(trans).join(pasien).join(dokter).filter(pasien.username==user).with_entities(trans.id_trans, pasien.no_pasien, pasien.nama_pasien, pasien.status_diperiksa, dokter.nama_dokter, dokter.kuota, trans.keluhan, trans.status_bayar, trans.harga_bayar, trans.resep_dokter, trans.status_checking_dokter).order_by(trans.id_trans.desc()).all()
+    return render_template("pasien/view_pasien.html", datas=rows, username=current_user)
+    db.session.close()
+
+def viewForDokter():
+    user = current_user.username
+    rows = db.session.query(trans).join(dokter).join(pasien).filter(dokter.username==user, trans.flag=="Y", trans.status_bayar=="N", trans.status_checking_dokter=="N").with_entities(trans.id_trans, dokter.id_dokter, dokter.nama_dokter, dokter.hari_kerja, dokter.jam_kerja, pasien.no_pasien, pasien.nama_pasien, trans.keluhan, trans.status_bayar, trans.resep_dokter, trans.created_date, trans.updated_date).all()
+    return render_template("dokter/view_dokter.html", datas=rows, username=current_user)
     db.session.close()

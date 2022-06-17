@@ -5,8 +5,8 @@ from app import db
 import datetime
 
 # The function below work for showing the active data on the database.
-def addPasienHistory(idPasien, nama_pasien, alamat_pasien, updated_date):
-    saveAdd = pasien_history(no_pasien=idPasien, nama_pasien=nama_pasien, alamat_pasien=alamat_pasien, flag="Y", updated_date=updated_date, created_date=updated_date)
+def addPasienHistory(username, idPasien, nama_pasien, alamat_pasien, updated_date):
+    saveAdd = pasien_history(username=username, no_pasien=idPasien, nama_pasien=nama_pasien, alamat_pasien=alamat_pasien, flag="Y", updated_date=updated_date, created_date=updated_date)
     db.session.add(saveAdd)
     db.session.commit()
     return redirect(url_for('pasien_bp.viewPasien'))

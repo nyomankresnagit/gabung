@@ -1,15 +1,17 @@
 from flask_sqlalchemy import SQLAlchemy
 from app import db
+from app.dokter.dokter_model import dokter
+from app.pasien.pasien_model import pasien
 
 # This file work for define and initialize model for the database.
 
 class trans(db.Model):
     id_trans = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_dokter = db.Column(db.Integer, db.ForeignKey('dokter.id_dokter'), nullable=False)
-    no_pasien = db.Column(db.Integer, db.ForeignKey('pasien.no_pasien'), nullable=False)
+    id_dokter = db.Column(db.Integer, db.ForeignKey('dokter.id_dokter'))
+    no_pasien = db.Column(db.Integer, db.ForeignKey('pasien.no_pasien'))
     status_bayar = db.Column(db.String(2), nullable=False)
     status_checking_dokter = db.Column(db.String(2), nullable=False)
-    resep_dokter = db.Column(db.String(2), nullable=False)
+    resep_dokter = db.Column(db.String(99), nullable=False)
     harga_bayar = db.Column(db.Integer, nullable=False)
     keluhan = db.Column(db.String(99), nullable=False)
     flag = db.Column(db.String(2), nullable=False)

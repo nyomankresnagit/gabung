@@ -1,4 +1,4 @@
-from app.pasien import pasien_bp, pasien_controller
+from app.pasien import pasien_bp, pasien_controller, pasien_model
 
 # This file work for routing function from the html to the controller file.
 

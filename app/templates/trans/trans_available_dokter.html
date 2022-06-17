@@ -4,17 +4,6 @@
     <title>Hospital</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script text='text/javascript'>
-        $(document).ready(function(){
-            var tanggal = new Date();
-            alert("tes");  
-        });
-      function idName(value){
-        text = value.split(" | ");
-        $("#noPasien").val(text[0]);
-        $("#namaPasien").val(text[1]);
-      }
-    </script>
 </head>  
 <body>
 {% extends 'dashboard/Dashboard.html'%}
@@ -61,6 +50,7 @@
           <td>Nama Dokter</td>
           <td>Hari Kerja</td>
           <td>Jam Kerja</td>
+          <td>Kuota</td>
           <td>Book</td>
       </thead> 
   
@@ -69,7 +59,8 @@
               <td id="idDokter">{{row.id_dokter}}</td>  
               <td id="namaDokter">{{row.nama_dokter}}</td>
               <td id="hariKerja1">{{row.hari_kerja}}</td>
-              <td id="jamKerjaShow">{{row.jam_kerja}}</td>
+              <td id="jamKerjaShow{{row.id_dokter}}">{{row.jam_kerja}}</td>
+              <td>{{row.kuota}}</td>
               <td><button id="btn-edit" class="btn-addFile" data-toggle="modal" data-target="#bookDokter{{row.id_dokter}}">Book</button></td>
               
 
@@ -82,46 +73,20 @@
                         </div>
                         <div class="modal-body">
                             <form role="form" method="POST" action='{{url_for("trans_bp.bookDokter")}}'>
-                                <div class="form-group">
-                                    <label class="control-label">Pasien</label>
-                                    <div>
-                                      <select class="form-control" name="data" method="GET" id="user{{row.id_dokter}}">
-                                        {% for data2 in datas2%}
-                                            <option value="{{data2.no_pasien}} | {{data2.nama_pasien}}" selected>{{data2.no_pasien}} | {{data2.nama_pasien}}</option>
-                                        {% endfor %}
-                                      </select>
-                                      <script>
-                                        $(document).ready(function(){
-                                          if("{{row.jam_kerja}}" == "shift1"){
-                                            $("#jamKerjaShow").val("00.00 - 08.00");
-                                          } else if("{{row.jam_kerja}}" == "shift2"){
-                                            $("#jamKerjaShow").val("08.00 - 16.00");
-                                          } else if("{{row.jam_kerja}}" == "shift3"){
-                                            $("#jamKerjaShow").val("16.00 - 00.00");
-                                          }
-                                          $("#user{{row.id_dokter}}").on('change', function(){
-                                            var val = $("#user{{row.id_dokter}}").val();
-                                            text = val.split(" | ");
-                                            $("#noPasien{{row.id_dokter}}").val(text[0]);
-                                            $("#namaPasien{{row.id_dokter}}").val(text[1]);
-                                          });
-                                        });
-                                      </script>
-                                    </div>
-                                </div>
-                                <div class="form-group">
+                                
+                                <div class="form-group" hidden>
                                     <label class="control-label">ID Pasien</label>
                                     <div>
-                                        <input type="text" class="form-control input-lg" name="noPasien" id="noPasien{{row.id_dokter}}" readonly>
+                                        <input type="text" class="form-control input-lg" name="noPasien" id="noPasien{{row.id_dokter}}" value="{{datas2.no_pasien}}" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label">Nama Pasien</label>
                                     <div>
-                                        <input type="text" class="form-control input-lg" name="namaPasien" id="namaPasien{{row.id_dokter}}" readonly>
+                                        <input type="text" class="form-control input-lg" name="namaPasien" id="namaPasien{{row.id_dokter}}" value="{{datas2.nama_pasien}}" readonly>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" hidden>
                                     <label class="control-label">ID Dokter</label>
                                     <div>
                                         <input type="text" class="form-control input-lg" name="idDokter" value="{{row.id_dokter}}" readonly>
@@ -133,13 +98,13 @@
                                         <input type="text" class="form-control input-lg" name="namaDokter" value="{{row.nama_dokter}}" readonly>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" hidden>
                                   <label class="control-label">Hari Kerja</label>
                                   <div>
                                     <input id="hariKerjaEditInput1" type="text" class="form-control input-lg" name="hariKerja" value="{{row.hari_kerja}}" readonly>
                                   </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" hidden>
                                     <label class="control-label">Jam Kerja</label>
                                     <div>
                                       <input id="jamKerjaEditInput1" type="text" class="form-control input-lg" name="jamKerja" value="{{row.jam_kerja}}" readonly>
@@ -164,6 +129,17 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
               </div><!-- /.modal -->
+              <script>
+                $(document).ready(function(){
+                  if($("#jamKerjaShow{{row.id_dokter}}").val() == "shift1"){
+                    $("#jamKerjaShow{{row.id_dokter}}").val("00.00 - 08.00");
+                  } else if($("#jamKerjaShow{{row.id_dokter}}").val() == "shift2"){
+                    $("#jamKerjaShow{{row.id_dokter}}").val("08.00 - 16.00");
+                  } else if($("#jamKerjaShow{{row.id_dokter}}").val() == "shift3"){
+                    $("#jamKerjaShow{{row.id_dokter}}").val("16.00 - 00.00");
+                  }
+                });
+              </script>
       {% endfor %}
   
   </table>  

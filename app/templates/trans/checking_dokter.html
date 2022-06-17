@@ -60,7 +60,6 @@
           <td>ID Pasien</td>
           <td>Nama Pasien</td>
           <td>Keluhan</td>
-          <td>Detail</td>
       </thead> 
   
       {% for row in datas %}
@@ -72,7 +71,7 @@
               <td id="">{{row.no_pasien}}</td>
               <td>{{row.nama_pasien}}</td>
               <td>{{row.keluhan}}</td>
-              <td><button id="btn-edit" class="btn-addFile" data-toggle="modal" data-target="#detailTrans{{row.id_trans}}">Checking</button></td>
+              
               
 
               <!-- Modal Edit -->
