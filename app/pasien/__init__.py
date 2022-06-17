@@ -4,4 +4,4 @@ from flask import Blueprint
 
 pasien_bp = Blueprint('pasien_bp',__name__, template_folder='templates', static_folder='static')
 
-from app.pasien.pasien_view import viewPasien
+from app.pasien import pasien_view

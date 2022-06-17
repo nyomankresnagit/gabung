@@ -4,4 +4,4 @@ from flask import Blueprint
 
 trans_bp = Blueprint('trans_bp', __name__, template_folder='templates', static_folder='static')
 
-from app.trans.trans_view import viewTrans
+from app.trans import trans_view

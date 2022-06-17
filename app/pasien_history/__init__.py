@@ -4,4 +4,4 @@ from flask import Blueprint
 
 pasien_history_bp = Blueprint('pasien_history_bp', __name__, template_folder='templates', static_folder='static')
 
-from app.pasien_history.pasien_history_view import viewPasienHistory
+from app.pasien_history import pasien_history_view

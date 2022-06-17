@@ -4,4 +4,4 @@ from flask import Blueprint
 
 dokter_bp = Blueprint('dokter_bp', __name__, template_folder='templates', static_folder='static')
 
-from app.dokter.dokter_view import viewDokter
+from app.dokter import dokter_view
