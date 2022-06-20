@@ -5,7 +5,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
-from app.auth.auth_model import admin
+from app.auths.auth_model import admin
 
 # FUNGSI REGISTRASI ADMIN
 def register():

@@ -4,7 +4,7 @@ from app import db
 
 # This file work for define and initialize model for the database.
 
-class admin(db.Model):
+class admins(db.Model):
     id_admin = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_auth = db.Column(db.Integer, db.ForeignKey('auth.id_auth'))
     username = db.Column(db.String(99), nullable=False)

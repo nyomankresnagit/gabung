@@ -7,11 +7,11 @@
   <ul>
     {% if g.admin %}
       <li><span>Selamat Datang <b>{{ g.admin['nama'] }}</b></span>
-      <li><a class="button-base" href="{{ url_for('auth.logout') }}">Log Out</a>
+      <li><a class="button-base" href="{{ url_for('auths.logout') }}">Log Out</a>
     {% else %}
-      <li><a class="button-base" href="{{ url_for('auth.register') }}">Register</a>
+      <li><a class="button-base" href="{{ url_for('auths.register') }}">Register</a>
         <li style="margin:5px"></li>
-      <li><a class="button-base" href="{{ url_for('auth.login') }}">Log In</a>
+      <li><a class="button-base" href="{{ url_for('auths.login') }}">Log In</a>
     {% endif %}
   </ul>
 </nav>

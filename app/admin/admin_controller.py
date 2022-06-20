@@ -1,6 +1,6 @@
 from app import db
 from flask import *
-from app.admin.admin_model import admin
+from app.admin.admin_model import admins
 from app.admin_history import admin_history_controller
 from app.auth.auth_model import auth
 from app.auth import auth_controller
@@ -9,7 +9,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 
 def viewAdmin():
-    rows = db.session.query(admin).join(auth).filter(auth.status_auth=="admin").all()
+    rows = db.session.query(admins).join(auth).filter(auth.status_auth=="admin").all()
     return render_template("admin/admin.html", datas=rows, username=current_user)
 
 def addAdmin():
@@ -22,14 +22,14 @@ def addAdmin():
     db.session.add(newUser)
     db.session.commit()
     id = auth_controller.findAuth(username)
-    saveAdd = admin(id_auth=id, username=username, password=password, nama_admin=nama_admin, jabatan=jabatan, flag="Y", created_date=date, updated_date=date)
+    saveAdd = admins(id_auth=id, username=username, password=password, nama_admin=nama_admin, jabatan=jabatan, flag="Y", created_date=date, updated_date=date)
     db.session.add(saveAdd)
     db.session.commit()
     return redirect(url_for('admin_bp.viewAdmin'))
     db.session.close()
 
 def deleteAdmin(idAdmin):
-    saveDelete = admin.query.filter(admin.id_admin==idAdmin).first()
+    saveDelete = admins.query.filter(admins.id_admin==idAdmin).first()
     saveDelete.flag = "N"
     saveDelete.updated_date = datetime.datetime.now()
     db.session.commit()
@@ -41,7 +41,7 @@ def editAdmin(idAdmin):
     nama_admin = request.form.get("namaAdmin")
     jabatan = request.form.get("jabatan")
     updated_date = datetime.datetime.now()
-    saveEditAdmin = admin.query.filter(admin.id_admin==idAdmin).first()
+    saveEditAdmin = admins.query.filter(admin.id_admin==idAdmin).first()
     admin_history_controller.addAdminHistory(idAdmin, saveEditAdmin.nama_admin, saveEditAdmin.jabatan, updated_date)
     saveEditAdmin.nama_admin = nama_admin
     saveEditAdmin.jabatan = jabatan
@@ -63,6 +63,6 @@ def searchAdmin():
         nama_admin = "%"
     else:
         nama_admin = "%" + nama_admin + "%"
-    rows = admin.query.filter(admin.id_admin.like(id_admin), admin.nama_admin.like(nama_admin), admin.flag=="Y").all()
+    rows = admins.query.filter(admins.id_admin.like(id_admin), admins.nama_admin.like(nama_admin), admins.flag=="Y").all()
     return render_template("admin/admin.html", datas = rows, username=current_user)
     db.session.close()

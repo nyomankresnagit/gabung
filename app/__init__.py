@@ -40,6 +40,18 @@ def create_app(config=DevelopmentConfig):
     def load_user(id_auth):
         return auth.query.get(int(id_auth))
 
+    from app.auths import bp_auth as auths
+    app.register_blueprint(auths)
+
+    from app.buku import bp_buku as buku
+    app.register_blueprint(buku)
+
+    from app.member import bp_member as member
+    app.register_blueprint(member)
+
+    from app.transaksi import bp_transaksi as transaksi
+    app.register_blueprint(transaksi)
+
     from app.admin import admin_bp
     app.register_blueprint(admin_bp)
 
@@ -66,5 +78,7 @@ def create_app(config=DevelopmentConfig):
 
     from app.trans import trans_bp
     app.register_blueprint(trans_bp)
+
+    app.add_url_rule('/', endpoint='index')
 
     return app

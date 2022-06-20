@@ -2,7 +2,7 @@ from flask_login import login_required
 from flask import render_template
 from app.auth import auth_bp, auth_controller, auth_model
 
-@auth_bp.route('/')
+@auth_bp.route('/homelogin')
 def formLogin():
     return render_template("auth/login.html")
 

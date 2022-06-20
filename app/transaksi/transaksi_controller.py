@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from io import StringIO
 import csv
 from app import db
-from app.auth.auth_model import admin
+from app.auths.auth_model import admin
 from app.buku.buku_model import buku
 from app.member.member_model import member
 from app.transaksi.transaksi_model import transaksi

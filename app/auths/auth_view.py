@@ -1,4 +1,4 @@
-from app.auth import bp_auth, auth_controller
+from app.auths import bp_auth, auth_controller
 
 # REGISTER ADMIN
 @bp_auth.route('/register', methods=('GET', 'POST'))

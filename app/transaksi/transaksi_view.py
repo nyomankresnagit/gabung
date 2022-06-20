@@ -4,7 +4,7 @@ from flask import render_template
 
 
 
-@bp_transaksi.route('/', methods=['GET', 'POST'])
+@bp_transaksi.route('/datatransaksi', methods=['GET', 'POST'])
 def index():
     return transaksi_controller.index()
 

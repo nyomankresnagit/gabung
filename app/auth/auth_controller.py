@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app.auth.auth_model import auth
 from app.dokter.dokter_model import dokter
 from app.pasien.pasien_model import pasien
-from app.admin.admin_model import admin
+from app.admin.admin_model import admins
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, LoginManager
 import datetime
